@@ -1,0 +1,64 @@
+<html>
+
+<head>
+
+    <style>
+        .row {
+            display: flex;
+        }
+        
+        .column {
+            float: left;
+        }
+        
+        #mapdiv {
+            height: 600px;
+            width: 2000px;
+            margin: 2px;
+        }
+        
+        .line {
+            fill: none;
+            stroke-width: 5px;
+            color: black;
+        }
+        
+        .mySVGs {
+            border: solid 2px black;
+            margin: 2px;
+            height: 600;
+            width: 1000;
+        }
+    </style>
+
+    <!--     <link rel="stylesheet" href="style.css" />
+ -->
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+
+    <!-- Load Leaflet -->
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js" integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og==" crossorigin=""></script>
+
+</head>
+
+<body>
+    <div class="row">
+        <div class="column">
+            <div id="mapdiv"> </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="column">
+            <svg class="mySVGs" id="acc-svg"> 
+                    <g id="acc-g" transform="translate(50,50)"> </g>
+            </svg>
+            <svg class="mySVGs" id="gyr-svg"> </svg>
+        </div>
+    </div>
+</body>
+
+<script src="plotData.js"></script>
+
+</html>

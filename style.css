@@ -1,0 +1,27 @@
+body {
+    font: 12px Helvetica;
+}
+
+svg {
+    border: solid 2px black;
+    margin: 2px;
+    height: 600;
+    width: 1000;
+}
+
+.row {
+    display: left;
+}
+
+.column {
+    float: left;
+}
+
+.line {
+    fill: none;
+    stroke-width: 2px;
+}
+
+#mapid {
+    height: 600px;
+}
