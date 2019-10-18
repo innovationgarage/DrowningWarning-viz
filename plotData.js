@@ -1,29 +1,20 @@
-    let store = {}
-
-    function loadData() {
-        return Promise.all([
-            d3.csv("capture_scaled.csv"),
-            d3.csv("telespor_clean_relevant.csv")
-        ]).then(datasets => {
-            store.measurements = datasets[0];
-            store.telespor = datasets[1];
-            return store;
-        })
-    }
-
-    function showData() {
-        //Get position and box measurements data
-        let measurements = store.measurements;
-        let telespor = store.telespor;
-
-        agData = measurements.map(d => ({
-            time: +d.time,
+    function showData(dataSources) {
+        let data = dataSources[0].map(d => ({
+            timestamp: new Date(d.position_time),
+            lat: +d.lat,
+            long: +d.long,
             ax: +d.ax,
             ay: +d.ay,
             az: +d.az,
             gx: +d.gx,
             gy: +d.gy,
-            gz: +d.gz
+            gz: +d.gz,
+            axs: +d.ax_savgol,
+            ays: +d.ay_savgol,
+            azs: +d.az_savgol,
+            gxs: +d.gx_savgol,
+            gys: +d.gy_savgol,
+            gzs: +d.gz_savgol
         }))
 
         // Initialize the map
@@ -33,24 +24,18 @@
 
         drawBaseMap().addTo(baseMap);
         // Add a svg layer to the map
-        L.svg().addTo(baseMap);
+        svglayer = L.svg()
+        svglayer.addTo(baseMap);
 
         // Draw poistions + time as a track
-        let positions = telespor.map(d => ({
-            date: new Date(d.position_time),
-            lat: +d.lat,
-            long: +d.long
-        }));
-        console.log(positions)
-
-        drawPositions(positions, baseMap, "red", 4);
-
         let body = d3.select("#mapdiv").select("svg").append("g")
         body.attr("id", "trackgroup")
-        drawTrack(positions, baseMap, body);
+        drawTrack(data, baseMap, body);
+
+        drawPositions(data, baseMap, "red", 10);
 
         // Draw timeline
-        drawLine(positions);
+        drawLine(data);
 
         // If the user change the map (zoom or drag), I update circle position:
         baseMap.on("moveend", function() { updateCircles(baseMap); });
@@ -72,30 +57,38 @@
         let bodyWidth = 900
         let bodyHeight = 500
 
-        valueLine = d3.line()
+        let colorScale = d3.scaleSequential(d3.interpolatePiYG)
+            .domain(d3.extent(data, d => d.ax))
+
+        let trackLine = d3.line()
             .x(d => baseMap.latLngToLayerPoint([+d.lat, +d.long]).x)
             .y(d => baseMap.latLngToLayerPoint([+d.lat, +d.long]).y)
 
         body.append("path")
             .datum(data)
-            .attr("d", valueLine)
+            .attr("id", "track")
+            .attr("d", trackLine)
             .attr("class", "line")
-            .attr("stroke", "cyan")
+            .attr("stroke", d => colorScale(d.ax))
+
     }
 
-    function drawPositions(positions, baseMap, color, s) {
+    function drawPositions(data, baseMap, color, s) {
+        let colorScale = d3.scaleSequential(d3.interpolatePiYG)
+            .domain(d3.extent(data, d => d.ax))
+
         d3.select("#mapdiv")
             .select("svg")
             .selectAll("myCircles")
-            .data(positions)
+            .data(data)
             .enter()
             .append("circle")
             .attr("cx", d => baseMap.latLngToLayerPoint([+d.lat, +d.long]).x)
             .attr("cy", d => baseMap.latLngToLayerPoint([+d.lat, +d.long]).y)
             .attr("r", s)
-            .style("fill", color)
-            .attr("stroke", color)
-            .attr("stroke-width", 3)
+            .style("fill", d => colorScale(d.ax))
+            .attr("stroke", "none")
+            .attr("stroke-width", 0)
             .attr("fill-opacity", .4)
     }
 
@@ -107,44 +100,55 @@
     }
 
     function updateTrack(baseMap) {
-        valueLine = d3.line()
+        let trackLine = d3.line()
             .x(d => baseMap.latLngToLayerPoint([+d.lat, +d.long]).x)
             .y(d => baseMap.latLngToLayerPoint([+d.lat, +d.long]).y)
 
-        d3.selectAll("path")
-            .attr('d', valueLine)
+        d3.selectAll("#track")
+            .attr('d', trackLine)
             .exit().remove()
     }
 
     function drawLine(data) {
-        console.log(data)
         let body = d3.select("#acc-g")
-        let bodyWidth = 900
-        let bodyHeight = 500
+        let bodyWidth = 840
+        let bodyHeight = 440
 
         let xScale = d3.scaleLinear()
-            .domain(d3.extent(data, d => d.long))
+            .domain(d3.extent(data, d => d.timestamp))
             .range([0, bodyWidth])
         let yScale = d3.scaleLinear()
-            .domain(d3.extent(data, d => d.lat))
+            .domain(d3.extent(data, d => d.axs))
             .range([bodyHeight, 0])
 
-        body.append("g")
-            .attr("transform", "translate(0," + bodyHeight + ")")
-            .call(d3.axisBottom(xScale))
-
-        body.append("g")
-            .attr("transform", "translate(0,0)")
-            .call(d3.axisLeft(yScale))
-
-        valueLine = d3.line()
-            .x(d => xScale(d.long))
-            .y(d => yScale(d.lat))
+        let valueLine = d3.line()
+            .x(d => xScale(d.timestamp))
+            .y(d => yScale(d.axs))
         body.append("path")
             .datum(data)
             .attr("d", valueLine)
             .attr("class", "line")
-            .attr("stroke", "rgb(112,22,22)")
+            .attr("stroke", "orange")
+
+        body.append("g")
+            .style("font", "18px times")
+            .attr("transform", "translate(0," + bodyHeight + ")")
+            .call(d3.axisBottom(xScale)
+                .tickFormat(d3.timeFormat("%b-%d %H:%M:%S"))
+            )
+            .selectAll("text")
+            .attr("y", 0)
+            .attr("x", 9)
+            .attr("dy", ".35em")
+            .attr("transform", "translate(-10, 10) rotate(20)")
+            .style("text-anchor", "start");
+
+        body.append("g")
+            .style("font", "18px times")
+            .attr("transform", "translate(0,0)")
+            .call(d3.axisLeft(yScale))
+
+
     }
 
-    loadData().then(showData)
+    Promise.all([d3.csv("all_data.csv")]).then(showData);
