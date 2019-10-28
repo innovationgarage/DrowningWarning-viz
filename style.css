@@ -1,27 +1,70 @@
 body {
-    font: 12px Helvetica;
+    background-color: #F1F3F3;
 }
 
-svg {
-    border: solid 2px black;
-    margin: 2px;
-    height: 600;
-    width: 1000;
+.axis {
+    font: 10px sans-serif;
 }
 
 .row {
-    display: left;
+    display: flex;
 }
 
 .column {
     float: left;
 }
 
-.line {
-    fill: none;
-    stroke-width: 2px;
+#mapdiv {
+    height: 600px;
+    width: 1800px;
+    margin: 2px;
 }
 
-#mapid {
-    height: 600px;
+.line {
+    fill: none;
+    stroke-width: 5px;
+    color: black;
+}
+
+.mySVGs {
+    border: solid 2px black;
+    margin: 2px;
+    height: 600;
+    width: 900;
+}
+
+.rowSVGs {
+    border: solid 2px black;
+    margin: 2px;
+    height: 600;
+    width: 1800;
+}
+
+#X {
+    stroke: rgba(209, 10, 10, 0.582)
+}
+
+#Y {
+    stroke: rgb(212, 141, 8)
+}
+
+#Z {
+    stroke: rgb(216, 216, 8)
+}
+
+.overlay {
+    fill: none;
+    pointer-events: all;
+}
+
+.focus circle {
+    fill: #F1F3F3;
+    stroke: #6F257F;
+    stroke-width: 5px;
+}
+
+.hover-line {
+    stroke: #6F257F;
+    stroke-width: 2px;
+    stroke-dasharray: 3, 3;
 }
