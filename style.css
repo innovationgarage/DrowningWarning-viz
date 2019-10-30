@@ -20,6 +20,11 @@ body {
     margin: 2px;
 }
 
+.axis path, .tick line {
+    fill: none;
+    stroke: #333;
+}
+
 .line {
     fill: none;
     stroke-width: 5px;

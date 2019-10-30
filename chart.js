@@ -5,7 +5,9 @@ class lineChart {
         this.data = opts.data;
         this.element = opts.element;
         this.xax = opts.xax;
-        this.yax = opts.yax;
+        this.yaxs = opts.yaxs;
+        this.lineIds = opts.lineIds;
+        this.colors = opts.colors;
         // create the chart
         this.draw();
     }
@@ -31,10 +33,19 @@ class lineChart {
         this.plot = svg.append('g')
             .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
 
-        // // create the other stuff
-        // this.createScales();
-        // this.addAxes();
-        // this.addLine();
+        let idx;
+        for (idx = 0; idx < this.yaxs.length; idx++) {
+            this.yax = this.yaxs[idx];
+            this.lineId = this.lineIds[idx];
+            this.createScales();    
+        };
+        for (idx = 0; idx < this.yaxs.length; idx++) {
+                this.yax = this.yaxs[idx];
+                this.lineId = this.lineIds[idx];
+                this.addLine();
+                this.setColor(this.colors[idx]);
+        };
+        this.addAxes();
     }
 
     createScales() {
@@ -45,8 +56,24 @@ class lineChart {
         const xExtent = d3.extent(this.data, d => d[this.xax]);
         const yExtent = d3.extent(this.data, d => d[this.yax]);
 
+        // Choose the axes extents to include all lines
+        if (typeof this.xmin === 'undefined') {
+            this.xmin = xExtent[0];
+            this.xmax = xExtent[1];
+        } else {
+            if (this.xmin > xExtent[0]) { this.xmin = xExtent[0]; };
+            if (this.xmax < xExtent[1]) { this.xmax = xExtent[1]; };
+        }
+        if (typeof this.ymin === 'undefined') {
+            this.ymin = yExtent[0];
+            this.ymax = yExtent[1];
+        } else {
+            if (this.ymin > yExtent[0]) { this.ymin = yExtent[0]; };
+            if (this.ymax < yExtent[1]) { this.ymax = yExtent[1]; };
+        }
+
         // force zero baseline if all data points are positive
-        if (yExtent[0] > 0) { yExtent[0] = 0; };
+        if (this.ymin > 0) { this.ymin = 0; };
 
         if (this.xax == 'timestamp') {
             this.xScale = d3.scaleTime()
@@ -54,11 +81,11 @@ class lineChart {
             this.xScale = d3.scaleLinear()
         }
         this.xScale.range([0, this.width - m.right])
-            .domain(xExtent);
+            .domain([this.xmin, this.xmax]);
 
         this.yScale = d3.scaleLinear()
             .range([this.height - (m.top + m.bottom), 0])
-            .domain(yExtent);
+            .domain([this.ymin, this.ymax]);
     }
 
     addAxes() {
@@ -78,6 +105,8 @@ class lineChart {
             this.plot.append("g")
                 .attr("class", "x axis")
                 .attr("transform", `translate(0, ${this.height - (m.top + m.bottom)})`)
+                .transition()
+                .duration(2000)
                 .call(xAxis)
                 .selectAll("text")
                 .attr("transform", "translate(-10, 10) rotate(20)")
@@ -86,30 +115,30 @@ class lineChart {
             this.plot.append("g")
                 .attr("class", "x axis")
                 .attr("transform", `translate(0, ${this.height - (m.top + m.bottom)})`)
+                .transition()
+                .duration(2000)
                 .call(xAxis)
         }
 
         this.plot.append("g")
             .attr("class", "y axis")
+            .transition()
+            .duration(2000)
             .call(yAxis)
+
     }
 
-    addLine(xax, yax, lineId) {
-        this.xax = xax;
-        this.yax = yax;
+    addLine() {
         let line = d3.line()
             .x(d => this.xScale(d[this.xax]))
             .y(d => this.yScale(d[this.yax]));
 
-        console.log(this.lineId)
-        console.log(this.xax)
-        console.log(this.yax)
         this.plot.append('path')
             // use data stored in `this`
             .datum(this.data)
-            .attr("id", lineId)
             .classed('line', true)
             .attr('d', line)
+            .attr("id", this.lineId)
             // set stroke to specified color, or default to red
             .style('stroke', this.lineColor || 'red');
     }
@@ -117,11 +146,11 @@ class lineChart {
     // the following are "public methods"
     // which can be used by code outside of this file
 
-    setColor(lineId, newColor) {
+    setColor(newColor) {
         // this.plot.select('.line')
         //     .style('stroke', newColor);
 
-        this.plot.select("#"+lineId)
+        this.plot.select("#" + this.lineId)
             .style('stroke', newColor);
 
         // store for use when redrawing

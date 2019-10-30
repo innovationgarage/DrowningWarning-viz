@@ -22,17 +22,12 @@ function showData(dataSource) {
         element: document.querySelector('.chart-container'),
         data: formattedData,
         xax: 'timestamp',
-        yax: 'axs'
+        yaxs: ['axs', 'ays', 'azs'],
+        lineIds: ['XSavgol', 'YSavgol', 'ZSavgol'],
+        colors: ['green', 'black', 'orange']
     };
     const chart = new lineChart(opt);
-    chart.draw();
-    chart.createScales();
-    chart.addAxes();
-    chart.addLine(opt.xax, opt.yax, "axs");
-    chart.setColor("axs", "green");
-    chart.addLine("gxs", 'gys', "gs");
-    chart.setColor("gys", "orange");
-
+    
     // // change line colour on click
     // d3.selectAll('button.color').on('click', function () {
     //     const color = d3.select(this).text().split(' ')[0];
