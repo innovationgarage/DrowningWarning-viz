@@ -1,4 +1,5 @@
 d3.csv("all_data.csv").then(showData);
+
 function showData(dataSource) {
     let data = dataSource.map(d => ({
         timestamp: new Date(d.position_time),
@@ -35,13 +36,14 @@ function drawMapChart(data) {
     // Draw poistions + time as a track
     let body = d3.select("#mapdiv").select("svg").append("g")
     body.attr("id", "trackgroup")
-    //drawTrack(data, baseMap, body);
+    drawTrack(data, baseMap, body);
+    baseMap.on("moveend", function() { updateTrack(baseMap); });    
 
-    drawPositions(data, baseMap, 10);
-    // If the user change the map (zoom or drag), I update circle position:
-    baseMap.on("moveend", function () { updateCircles(baseMap); });
-    //        baseMap.on("moveend", function() { updateTrack(baseMap); });
-
+    // drawPositions(data, baseMap, 10);
+    // // If the user change the map (zoom or drag), I update circle position:
+    // baseMap.on("moveend", function () { updateCircles(baseMap); });
+    
+    drawHeatmap(data, baseMap, 25);
 }
 
 function drawBaseMap() {
@@ -70,8 +72,6 @@ function drawTrack(data, baseMap, body) {
         .attr("id", "track")
         .attr("d", trackLine)
         .attr("class", "line")
-        .attr("stroke", d => colorScale(d.ax))
-
 }
 
 function drawPositions(data, baseMap, s) {
@@ -95,6 +95,12 @@ function drawPositions(data, baseMap, s) {
         .attr("stroke", "none")
         .attr("stroke-width", 0)
         .attr("fill-opacity", .4)
+}
+
+function drawHeatmap(data, baseMap, s) {
+    let locations = data.map(d => [d.lat, d.long, Math.sqrt(Math.pow(d.gxs,2)+Math.pow(d.gys,2)+Math.pow(d.gzs,2))]);
+    let heat = L.heatLayer(locations, { radius: s });
+    baseMap.addLayer(heat);
 }
 
 // Function that update circle position if something change
@@ -129,7 +135,7 @@ function drawLineCharts(data) {
         element: "svg.chartSVG.gyro",
         data: data,
         xax: 'timestamp',
-        yaxs: ['axs', 'ays', 'azs'],
+        yaxs: ['gxs', 'gys', 'gzs'],
         lineIds: ['X', 'Y', 'Z']
     };
     const chart_gyr = new lineChart(opt_gyr);
