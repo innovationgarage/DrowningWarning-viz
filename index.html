@@ -6,7 +6,7 @@
 
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
-    <script src="chart.js"></script>
+    <script src="lineChart.js"></script>
 
     <!-- Load Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
@@ -20,10 +20,6 @@
 </head>
 
 <body>
-    <div class="row"></div>
-        <!-- here's the div our chart will be injected into -->
-        <div class="chart-container" style="max-width: 1000px;"></div>
-    </div>
     <div class="row">
         <div class="column">
             <div id="mapdiv"> </div>
@@ -31,18 +27,13 @@
     </div>
     <div class="row">
         <div class="column">
-            <svg class="mySVGs" id="svg-a">
-                <g id="time-a" transform="translate(50,50) "> </g>
-            </svg>
-            <svg class="mySVGs " id="svg-g">
-                <g id="time-g" transform="translate(50,50) "> </g>
-            </svg>
+            <svg class="chartSVG acceleration"></svg>
+            <svg class="chartSVG gyro " id="svg-g"></svg>
         </div>
     </div>
 </body>
 
-<script src="plotData.js "></script>
-<script src="chart_script.js "></script>
+<script src="visualization.js "></script>
 
 
 </html>
