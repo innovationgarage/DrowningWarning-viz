@@ -18,32 +18,63 @@ function showData(dataSource) {
         gys: +d.gy_savgol,
         gzs: +d.gz_savgol
     }));
+    console.log(data)
     drawMapChart(data);
-    drawLineCharts(data);
+    //    drawLineCharts(data);
 }
 
 function drawMapChart(data) {
     // Initialize the map
-    var baseMap = L
-        .map('mapdiv')
-        .setView([69.961308, 18.703892], 10);
+    var streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        { id: '#mapdiv', attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>' }
+    )
 
-    drawBaseMap().addTo(baseMap);
+    // Initiate base maps   
+    var baseLayers = {
+        "Streets": streets
+    };
+
+    var baseMap = L.map('mapdiv', {
+        center: [69.961308, 18.703892],
+        zoom: 10,
+        layers: streets
+    });
+
+    // Initiate overlay maps
+    let cities = drawCities(baseMap)
+    let heatmap = drawHeatmap(data, baseMap, 25)
+    var overlayMaps = {
+        "Cities": cities,
+        "Heatmap": heatmap
+    }
+
+    // Add a controler
+    L.control.layers(baseLayers, overlayMaps).addTo(baseMap);
+
+    //    drawBaseMap().addTo(baseMap);
     // Add a svg layer to the map
-    svglayer = L.svg()
-    svglayer.addTo(baseMap);
+    // svglayer = L.svg()
+    // svglayer.addTo(baseMap);
 
     // Draw poistions + time as a track
     let body = d3.select("#mapdiv").select("svg").append("g")
     body.attr("id", "trackgroup")
-    drawTrack(data, baseMap, body);
-    baseMap.on("moveend", function() { updateTrack(baseMap); });    
+    // drawTrack(data, baseMap, body);
+    // baseMap.on("moveend", function() { updateTrack(baseMap); });    
 
     // drawPositions(data, baseMap, 10);
-    // // If the user change the map (zoom or drag), I update circle position:
+    // If the user change the map (zoom or drag), I update circle position:
     // baseMap.on("moveend", function () { updateCircles(baseMap); });
-    
-    drawHeatmap(data, baseMap, 25);
+
+}
+
+function drawCities(baseMap) {
+    var Tromso = L.marker([69.654852, 18.954828]).bindPopup('This is Tromso, CO.'),
+        Kvaloya = L.marker([69.681635, 18.737233]).bindPopup('This is Kvaloya, CO.'),
+        Vengsoy = L.marker([69.847830, 18.537613]).bindPopup('This is Aurora, CO.'),
+        Tromvik = L.marker([69.773965, 18.390391]).bindPopup('This is Golden, CO.');
+    var cities = L.layerGroup([Tromso, Kvaloya, Vengsoy, Tromvik]);
+    return cities
 }
 
 function drawBaseMap() {
@@ -98,12 +129,14 @@ function drawPositions(data, baseMap, s) {
 }
 
 function drawHeatmap(data, baseMap, s) {
-    let locations = data.map(d => [d.lat, d.long, Math.sqrt(Math.pow(d.gxs,2)+Math.pow(d.gys,2)+Math.pow(d.gzs,2))]);
+    let locations = data.map(d => [d.lat, d.long, Math.sqrt(Math.pow(d.gxs, 2) + Math.pow(d.gys, 2) + Math.pow(d.gzs, 2))]);
     let heat = L.heatLayer(locations, { radius: s });
-    baseMap.addLayer(heat);
+    //baseMap.addLayer(heat);
+    return heat
 }
 
-// Function that update circle position if something change
+
+//Function that update circle position if something change
 function updateCircles(baseMap) {
     d3.selectAll("circle.positionCircle")
         .attr("cx", d => baseMap.latLngToLayerPoint([+d.lat, +d.long]).x)
