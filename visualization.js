@@ -42,19 +42,16 @@ function drawMapChart(data) {
 
     // Initiate overlay maps
     let cities = drawCities(baseMap)
-    let heatmap = drawHeatmap(data, baseMap, 25)
+    let heatmap_ax  = drawHeatmap(data, baseMap, 'axs', 25)
+    let heatmap_gz  = drawHeatmap(data, baseMap, 'gzs', 25)
     var overlayMaps = {
         "Cities": cities,
-        "Heatmap": heatmap
+        "ax": heatmap_ax,
+        "gz": heatmap_gz,
     }
 
     // Add a controler
     L.control.layers(baseLayers, overlayMaps).addTo(baseMap);
-
-    //    drawBaseMap().addTo(baseMap);
-    // Add a svg layer to the map
-    // svglayer = L.svg()
-    // svglayer.addTo(baseMap);
 
     // Draw poistions + time as a track
     let body = d3.select("#mapdiv").select("svg").append("g")
@@ -66,6 +63,12 @@ function drawMapChart(data) {
     // If the user change the map (zoom or drag), I update circle position:
     // baseMap.on("moveend", function () { updateCircles(baseMap); });
 
+}
+
+function drawHeatmap(data, baseMap, param, s) {
+    let locations = data.map(d => [d.lat, d.long, d[param]])
+    let heat = L.heatLayer(locations, { radius: s });
+    return heat
 }
 
 function drawCities(baseMap) {
@@ -127,14 +130,6 @@ function drawPositions(data, baseMap, s) {
         .attr("stroke-width", 0)
         .attr("fill-opacity", .4)
 }
-
-function drawHeatmap(data, baseMap, s) {
-    let locations = data.map(d => [d.lat, d.long, Math.sqrt(Math.pow(d.gxs, 2) + Math.pow(d.gys, 2) + Math.pow(d.gzs, 2))]);
-    let heat = L.heatLayer(locations, { radius: s });
-    //baseMap.addLayer(heat);
-    return heat
-}
-
 
 //Function that update circle position if something change
 function updateCircles(baseMap) {
