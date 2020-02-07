@@ -1,0 +1,56 @@
+body {
+    background-color: #F1F3F3;
+}
+
+.axis {
+    font: 14px sans-serif;
+}
+
+.row {
+    display: flex;
+}
+
+.column {
+    float: left;
+}
+
+#mapdiv {
+    height: 600px;
+    width: 1800px;
+    margin: 2px;
+}
+
+.axis path, .tick line {
+    fill: none;
+    stroke: #333;
+}
+
+.line {
+    fill: none;
+    stroke-width: 5px;
+    color: black;
+}
+
+.chartSVG {
+    border: solid 2px black;
+    margin: 2px;
+    height: 600;
+    width: 900;
+}
+
+#X.line {
+    stroke: rgba(209, 10, 10, 0.582)
+}
+
+#Y.line {
+    stroke: rgb(212, 141, 8)
+}
+
+#Z.line {
+    stroke: rgb(216, 216, 8)
+}
+
+.overlay {
+    fill: none;
+    pointer-events: all;
+}

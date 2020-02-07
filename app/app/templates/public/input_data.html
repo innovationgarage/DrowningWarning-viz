@@ -1,0 +1,40 @@
+{% extends "public/templates/public_template.html" %}
+
+{% block title %}Data input{% endblock %}
+
+{% block main %}
+
+<div class="formwrapper">
+    <form method="POST" action="/input-data" enctype="multipart/form-data">
+        <div class="form-field">{{ form.telespor.label }} {{ form.telespor }}
+            {% if form.telespor.errors %}
+            <ul class="errors">
+                {% for error in form.telespor.errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        <div class="form-field">{{ form.capture.label }} {{ form.capture }}
+            {% if form.capture.errors %}
+            <ul class="errors">
+                {% for error in form.capture.errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        <div class="form-field">{{ form.starttime.label }} {{ form.starttime }}
+            {% if form.starttime.errors %}
+            <ul class="errors">
+                {% for error in form.starttime.errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {{ form.submit }}
+    </form>
+</div>
+
+{% endblock %}
