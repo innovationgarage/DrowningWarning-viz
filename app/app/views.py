@@ -14,7 +14,7 @@ from flask_wtf.file import FileField, FileRequired, FileAllowed
 from werkzeug.utils import secure_filename
 
 class DataInputForm(FlaskForm):
-    starttime = StringField('Starttime', validators=[DataRequired()])
+    starttime = DateTimeField('Starttime', validators=[DataRequired()])
     capture = FileField('Capture', validators=[
         FileRequired(), 
         FileAllowed(app.config["ALLOWED_CAPTURE_EXTENSIONS"], 'This file should be formated as a csv with a .txt or .csv extension!')
@@ -45,19 +45,15 @@ def admin_dashboard():
 def input_data():
     form = DataInputForm()
     if form.validate_on_submit():
-        print('OK!')
-        print('Starttime:', form.starttime.data)
+
         capture = form.capture.data
         cap_filename = secure_filename(capture.filename)
         capture.save(os.path.join(app.root_path, app.config['FILE_UPLOADS'], cap_filename))
-        print('Capture:', cap_filename)
+
         telespor = form.telespor.data
         ts_filename = secure_filename(telespor.filename)
         telespor.save(os.path.join(app.root_path, app.config['FILE_UPLOADS'], ts_filename))
-        print('Telespor:', ts_filename)
-        redirect(url_for('input-data', form=form))
-    print('TS ERRORS', form.telespor.errors)
-    print('CAP ERRORS', form.capture.errors)
+        redirect(url_for('input_data'))
     return render_template("public/input_data.html", form=form)
 
 
