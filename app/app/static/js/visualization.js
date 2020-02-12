@@ -1,4 +1,4 @@
-d3.csv("all_data.csv").then(showData);
+d3.csv("/static/files/processed/all_data.csv").then(showData);
 
 function showData(dataSource) {
     let data = dataSource.map(d => ({

@@ -8,11 +8,12 @@ class Config(object):
     DB_PASSWORD = "example"
 
     FILE_UPLOADS = "static/files/uploads"
+    FILE_PROCESSED = "static/files/processed"
     ALLOWED_CAPTURE_EXTENSIONS = ["TXT", "CSV", 'csv', 'txt']
     ALLOWED_TELESPOR_EXTENSIONS = ["CSV", 'csv']
 
-    WTF_CSRF_ENABLED = False
-#    WTF_CSRF_SECRET_KEY = 'a random string'
+#    WTF_CSRF_ENABLED = False
+    WTF_CSRF_SECRET_KEY = SECRET_KEY
 
 class ProductionConfig(Config):
     pass
