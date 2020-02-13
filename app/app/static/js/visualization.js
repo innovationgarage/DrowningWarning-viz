@@ -1,6 +1,7 @@
 d3.csv("/static/files/processed/combined_data.csv").then(showData);
 
 function showData(dataSource) {
+    console.log(dataSource)
     let data = dataSource.map(d => ({
         timestamp: new Date(d.position_time),
         lat: +d.lat,
@@ -10,13 +11,7 @@ function showData(dataSource) {
         az: +d.az,
         gx: +d.gx,
         gy: +d.gy,
-        gz: +d.gz,
-        axs: +d.ax_savgol,
-        ays: +d.ay_savgol,
-        azs: +d.az_savgol,
-        gxs: +d.gx_savgol,
-        gys: +d.gy_savgol,
-        gzs: +d.gz_savgol
+        gz: +d.gz
     }));
     console.log(data)
     drawMapChart(data);
@@ -42,8 +37,8 @@ function drawMapChart(data) {
 
     // Initiate overlay maps
     let cities = drawCities(baseMap)
-    let heatmap_ax  = drawHeatmap(data, baseMap, 'axs', 25)
-    let heatmap_gz  = drawHeatmap(data, baseMap, 'gzs', 25)
+    let heatmap_ax  = drawHeatmap(data, baseMap, 'ax', 25)
+    let heatmap_gz  = drawHeatmap(data, baseMap, 'gz', 25)
     var overlayMaps = {
         "Cities": cities,
         "ax": heatmap_ax,
@@ -154,7 +149,7 @@ function drawLineCharts(data) {
         element: "svg.chartSVG.acceleration",
         data: data,
         xax: 'timestamp',
-        yaxs: ['axs', 'ays', 'azs'],
+        yax: ['ax', 'ay', 'az'],
         lineIds: ['X', 'Y', 'Z']
     };
     const chart_acc = new lineChart(opt_acc);
@@ -163,7 +158,7 @@ function drawLineCharts(data) {
         element: "svg.chartSVG.gyro",
         data: data,
         xax: 'timestamp',
-        yaxs: ['gxs', 'gys', 'gzs'],
+        yax: ['gx', 'gy', 'gz'],
         lineIds: ['X', 'Y', 'Z']
     };
     const chart_gyr = new lineChart(opt_gyr);
