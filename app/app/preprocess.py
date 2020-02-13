@@ -10,7 +10,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 """
 UDAGE:
-python clean_data.py --ti telespor.csv --to telespor_clean.csv --ci capture.txt --co capture_clean.csv --allout all_data.csv --starttime '2019-10-11 10:17:00.0000'
+python clean_data.py --ti telespor.csv --to telespor_clean.csv --ci capture.txt --co capture_clean.csv --allout all_data.csv --starttime '2019-10-11 10:17:00'
 """
 
 #Get and clean data that comes from telespor API eport
@@ -96,7 +96,6 @@ def cleanCapture(infile, starttime):
 def resampleAll(capture, telespor, sample_rate, signal_start, signal_end):
     signal_start = pd.to_datetime(signal_start, utc=True)
     signal_end = pd.to_datetime(signal_end, utc=True) 
-    
     capture.set_index('timestamp', inplace=True)
     capture = capture.resample(sample_rate).mean().interpolate()
     
@@ -105,35 +104,41 @@ def resampleAll(capture, telespor, sample_rate, signal_start, signal_end):
     
     telespor.reset_index(level=[0], inplace=True)
     capture.reset_index(level=[0], inplace=True)
+
+    capture_start = capture.timestamp.min()
+    capture_end = capture.timestamp.max()
+#    if (signal_start >= capture_start) and (signal_start <= capture_end):
     telespor = telespor[telespor.timestamp>=signal_start]
-    telespor = telespor[telespor.timestamp<=signal_end]
-    telespor.reset_index(level=[0], inplace=True, drop=True)
     capture = capture[capture.timestamp>=signal_start]
+#    if (signal_end >= capture_start) and (signal_end <= capture_end):
     capture = capture[capture.timestamp<=signal_end]
+    telespor = telespor[telespor.timestamp<=signal_end]
+
+    telespor.reset_index(level=[0], inplace=True, drop=True)
     capture.reset_index(level=[0], inplace=True, drop=True)
     
     return capture, telespor
 
 def main(args):
     print('Preprocessing the data...!')
-    # interp_cols = ['lat', 'long',
-    #                'batteryvoltage', 'engine_ON', 'speed_knots',
-    #                'ax', 'ay', 'az',
-    #                'gx', 'gy', 'gz']
-    # drop_cols = ['ID', 'temperature']
+    interp_cols = ['lat', 'long',
+                   'batteryvoltage', 'engine_ON', 'speed_knots',
+                   'ax', 'ay', 'az',
+                   'gx', 'gy', 'gz']
+    drop_cols = ['ID', 'temperature']
 
-    # capture, capture_start, capture_end = cleanCapture(args['ci'], args['starttime'])
-    # telespor, telespor_start, telespor_end = cleanTelespor(args['ti'], drop_cols)
+    capture, capture_start, capture_end = cleanCapture(args['ci'], args['starttime'])
+    telespor, telespor_start, telespor_end = cleanTelespor(args['ti'], drop_cols)
 
-    # capture, telespor = resampleAll(capture, telespor, args['samplerate'], args['signalstart'], args['signalend'])
-    # merged = pd.merge(capture, telespor, how='left', on='timestamp', sort=True)
+    capture, telespor = resampleAll(capture, telespor, args['samplerate'], args['signalstart'], args['signalend'])
+    merged = pd.merge(capture, telespor, how='left', on='timestamp', sort=True)
 
-    # for col in ['lat', 'long', 'batteryvoltage']:
-    #     merged[col] = merged[col].fillna(method='ffill')
-    #     merged[col] = merged[col].fillna(method='bfill') 
-    #     merged['engine_ON'] = merged['batteryvoltage']==merged.batteryvoltage.max()
+    for col in ['lat', 'long', 'batteryvoltage']:
+        merged[col] = merged[col].fillna(method='ffill')
+        merged[col] = merged[col].fillna(method='bfill') 
+        merged['engine_ON'] = merged['batteryvoltage']==merged.batteryvoltage.max()
 
-    # merged.to_csv(args['allout'], index=False)        
+    merged.to_csv(args['allout'], index=False)        
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description='Process some integers.')

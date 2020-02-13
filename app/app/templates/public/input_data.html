@@ -33,6 +33,33 @@
             </ul>
             {% endif %}
         </div>
+        <div class="form-field">{{ form.signalstart.label }} {{ form.signalstart }}
+            {% if form.signalstart.errors %}
+            <ul class="errors">
+                {% for error in form.signalstart.errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        <div class="form-field">{{ form.signalend.label }} {{ form.signalend }}
+            {% if form.signalend.errors %}
+            <ul class="errors">
+                {% for error in form.signalend.errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        <div class="form-field">{{ form.samplerate.label }} {{ form.samplerate }}
+            {% if form.samplerate.errors %}
+            <ul class="errors">
+                {% for error in form.samplerate.errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
         {{ form.submit }}
     </form>
 </div>
