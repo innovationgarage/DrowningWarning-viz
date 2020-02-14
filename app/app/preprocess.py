@@ -121,24 +121,24 @@ def resampleAll(capture, telespor, sample_rate, signal_start, signal_end):
 
 def main(args):
     print('Preprocessing the data...!')
-    interp_cols = ['lat', 'long',
-                   'batteryvoltage', 'engine_ON', 'speed_knots',
-                   'ax', 'ay', 'az',
-                   'gx', 'gy', 'gz']
-    drop_cols = ['ID', 'temperature']
+    # interp_cols = ['lat', 'long',
+    #                'batteryvoltage', 'engine_ON', 'speed_knots',
+    #                'ax', 'ay', 'az',
+    #                'gx', 'gy', 'gz']
+    # drop_cols = ['ID', 'temperature']
 
-    capture, capture_start, capture_end = cleanCapture(args['ci'], args['starttime'])
-    telespor, telespor_start, telespor_end = cleanTelespor(args['ti'], drop_cols)
+    # capture, capture_start, capture_end = cleanCapture(args['ci'], args['starttime'])
+    # telespor, telespor_start, telespor_end = cleanTelespor(args['ti'], drop_cols)
 
-    capture, telespor = resampleAll(capture, telespor, args['samplerate'], args['signalstart'], args['signalend'])
-    merged = pd.merge(capture, telespor, how='left', on='timestamp', sort=True)
+    # capture, telespor = resampleAll(capture, telespor, args['samplerate'], args['signalstart'], args['signalend'])
+    # merged = pd.merge(capture, telespor, how='left', on='timestamp', sort=True)
 
-    for col in ['lat', 'long', 'batteryvoltage']:
-        merged[col] = merged[col].fillna(method='ffill')
-        merged[col] = merged[col].fillna(method='bfill') 
-        merged['engine_ON'] = merged['batteryvoltage']==merged.batteryvoltage.max()
+    # for col in ['lat', 'long', 'batteryvoltage']:
+    #     merged[col] = merged[col].fillna(method='ffill')
+    #     merged[col] = merged[col].fillna(method='bfill') 
+    #     merged['engine_ON'] = merged['batteryvoltage']==merged.batteryvoltage.max()
 
-    merged.to_csv(args['allout'], index=False)        
+    # merged.to_csv(args['allout'], index=False)        
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description='Process some integers.')
