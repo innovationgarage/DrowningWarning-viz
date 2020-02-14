@@ -5,6 +5,6 @@ if app.config["ENV"] == "production":
 else:
     app.config.from_object("config.DevelopmentConfig")
 
-print(f'ENV is set to: {app.config["ENV"]}')
+print('ENV is set to: {app.config["ENV"]}')
 
 from app import views
