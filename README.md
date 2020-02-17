@@ -1,11 +1,20 @@
 # DrowningWarning-viz
 ### Run the app
 
-- Run
+- Build
 
         cd app
-        sudo docker build --tag dw-app .
-        sudo docker run --name dw-app -p 5001:5001 dw-app
+        docker build --tag dw-app .
+       
+- Run
+
+Either run stand-alone using docker
+        
+        docker run --name dw-app -p 5001:5001 dw-app
+
+or as a docker service
+
+        docker service create --name dw-app -p 5001:5001 dw-app
 
 - Visit http://0.0.0.0:5001/input-data
 - Upload the measurement file (csv frmat with .txt or .csv extension)
