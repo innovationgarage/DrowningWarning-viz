@@ -1,8 +1,9 @@
 # DrowningWarning-viz
 ### Run the app
 
-- From /app
+- Run
 
+        cd app
         sudo docker build --tag dw-app .
         sudo docker run --name dw-app -p 5001:5001 dw-app
 
