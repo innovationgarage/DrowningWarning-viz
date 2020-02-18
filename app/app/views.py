@@ -81,8 +81,11 @@ def data_submit():
         'signalend': signalend,
         'samplerate': samplerate
     }
-    preprocess.main(args)
-    return redirect(url_for("show_map", mapid=mapid))
+    pid = os.fork()
+    if pid == 0:
+        preprocess.main(args)
+    else:
+        return redirect(url_for("show_map", mapid=mapid))
 
 @app.route("/map")
 def show_map():

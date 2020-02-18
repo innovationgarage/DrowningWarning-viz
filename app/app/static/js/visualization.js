@@ -1,7 +1,18 @@
-d3.csv("/static/files/processed/map_"+ mapid + ".csv").then(showData);
+loadData = function () {
+    d3.csv("/static/files/processed/map_" + mapid + ".csv")
+        .then(showData)
+        .catch(function (error) {
+            console.log('BLAAAAH', error);
+            setTimeout(function () {
+                loadData();
+            }, 600);
+        });
+}
 
+loadData();
 function showData(dataSource) {
-    console.log(dataSource)
+    d3.select("#progress")
+        .style("display", "none");
     let data = dataSource.map(d => ({
         timestamp: new Date(d.position_time),
         lat: +d.lat,
