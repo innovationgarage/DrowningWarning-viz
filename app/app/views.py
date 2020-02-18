@@ -1,4 +1,5 @@
 import os
+import uuid
 from app import app
 from flask import render_template, url_for
 from flask import request, redirect, send_from_directory
@@ -7,6 +8,7 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 from . import preprocess
 from . import forms
+
 
 
 @app.route('/favicon.ico')
@@ -61,6 +63,7 @@ def input_data():
 
 @app.route("/data-submit")
 def data_submit():
+    mapid = str(uuid.uuid4())
     starttime = request.values['starttime']
     signalstart = request.values['signalstart']
     signalend = request.values['signalend']
@@ -72,16 +75,15 @@ def data_submit():
     args = {
         'ti': ts_filename,
         'ci': cap_filename,
-        'allout': os.path.join(app.root_path, app.config['FILE_PROCESSED'], 'combined_data.csv'),
+        'allout': os.path.join(app.root_path, app.config['FILE_PROCESSED'], 'map_{}.csv'.format(mapid)),
         'starttime': starttime,
         'signalstart': signalstart,
         'signalend': signalend,
         'samplerate': samplerate
     }
     preprocess.main(args)
-    return render_template("public/map.html")
-
+    return redirect(url_for("show_map", mapid=mapid))
 
 @app.route("/map")
 def show_map():
-    return render_template("public/map.html")
+    return render_template("public/map.html", mapid=request.values['mapid'])

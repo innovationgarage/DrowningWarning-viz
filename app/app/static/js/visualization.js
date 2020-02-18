@@ -1,4 +1,4 @@
-d3.csv("/static/files/processed/combined_data.csv").then(showData);
+d3.csv("/static/files/processed/map_"+ mapid + ".csv").then(showData);
 
 function showData(dataSource) {
     console.log(dataSource)
