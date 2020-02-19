@@ -24,7 +24,8 @@ function showData(dataSource) {
         gx: +d.gx,
         gy: +d.gy,
         gz: +d.gz,
-        g: ((d.gx * 2) + (d.gy * 2) + (d.gz * 2)) ** (1 / 2)
+        g: ((d.gx * 2) + (d.gy * 2) + (d.gz * 2)) ** (1 / 2),
+        speed_knots: +d.speed_knots
     }));
     drawMapChart(data);
 }
@@ -56,7 +57,9 @@ function drawMapChart(data) {
     let heatmap_gy = drawHeatmap(data, baseMap, 'gy', 25)
     let heatmap_gz = drawHeatmap(data, baseMap, 'gz', 25)
     let heatmap_g = drawHeatmap(data, baseMap, 'Gyro', 25)
+    let speed = drawHeatmap(data, baseMap, 'Speed', 25)
     var overlayMaps = {
+        "Speed": speed,        
         "Acceleration": heatmap_a,
         "ax": heatmap_ax,
         "ay": heatmap_ay,
@@ -69,6 +72,7 @@ function drawMapChart(data) {
 
     // Add dynamic URL hash for all layers
     var allMapLayers = {
+        "Speed": speed,                
         "Acceleration": heatmap_a,
         "ax": heatmap_ax,
         "ay": heatmap_ay,
@@ -83,7 +87,7 @@ function drawMapChart(data) {
 
     // Add a controler
     L.control.layers(baseLayers, overlayMaps).addTo(baseMap);
-    baseMap.addLayer(heatmap_a);
+    baseMap.addLayer(speed);
 
     let body = d3.select("#mapdiv").select("svg").append("g")
     body.attr("id", "trackgroup")
