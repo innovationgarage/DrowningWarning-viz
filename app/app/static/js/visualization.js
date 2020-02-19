@@ -26,7 +26,6 @@ function showData(dataSource) {
         gz: +d.gz,
         g: ((d.gx * 2) + (d.gy * 2) + (d.gz * 2)) ** (1 / 2)
     }));
-    console.log(data)
     drawMapChart(data);
 }
 
@@ -46,6 +45,8 @@ function drawMapChart(data) {
         zoom: 10,
         layers: streets
     });
+
+    let hash = new L.Hash(baseMap);
 
     // Initiate overlay maps
     let heatmap_ax = drawHeatmap(data, baseMap, 'ax', 25)
