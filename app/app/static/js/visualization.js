@@ -46,8 +46,6 @@ function drawMapChart(data) {
         layers: streets
     });
 
-    let hash = new L.Hash(baseMap);
-
     // Initiate overlay maps
     let heatmap_ax = drawHeatmap(data, baseMap, 'ax', 25)
     let heatmap_ay = drawHeatmap(data, baseMap, 'ay', 25)
@@ -71,6 +69,20 @@ function drawMapChart(data) {
     // Add a controler
     L.control.layers(baseLayers, overlayMaps).addTo(baseMap);
     baseMap.addLayer(heatmap_a);
+
+    // Add dynamic URL hash for all layers
+    var allMapLayers = {
+        "Acceleration": heatmap_a,
+        "ax": heatmap_ax,
+        "ay": heatmap_ay,
+        "az": heatmap_az,
+        "Gyro": heatmap_g,
+        "gx": heatmap_gx,
+        "gy": heatmap_gy,
+        "gz": heatmap_gz,
+        'base_layer_name': baseLayers
+    };
+    var hash = new L.Hash(baseMap, allMapLayers);
 
     let body = d3.select("#mapdiv").select("svg").append("g")
     body.attr("id", "trackgroup")
