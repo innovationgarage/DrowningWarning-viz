@@ -29,6 +29,7 @@ function showData(dataSource) {
     drawMapChart(data);
 }
 
+
 function drawMapChart(data) {
     // Initialize the map
     var streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -43,7 +44,7 @@ function drawMapChart(data) {
     var baseMap = L.map('mapdiv', {
         center: [69.961308, 18.703892],
         zoom: 10,
-        layers: streets
+        layers: baseLayers["Streets"]
     });
 
     // Initiate overlay maps
@@ -66,10 +67,6 @@ function drawMapChart(data) {
         "gz": heatmap_gz
     }
 
-    // Add a controler
-    L.control.layers(baseLayers, overlayMaps).addTo(baseMap);
-    baseMap.addLayer(heatmap_a);
-
     // Add dynamic URL hash for all layers
     var allMapLayers = {
         "Acceleration": heatmap_a,
@@ -80,9 +77,13 @@ function drawMapChart(data) {
         "gx": heatmap_gx,
         "gy": heatmap_gy,
         "gz": heatmap_gz,
-        'base_layer_name': baseLayers
+        'Streets': baseLayers["Streets"]
     };
     var hash = new L.Hash(baseMap, allMapLayers);
+
+    // Add a controler
+    L.control.layers(baseLayers, overlayMaps).addTo(baseMap);
+    baseMap.addLayer(heatmap_a);
 
     let body = d3.select("#mapdiv").select("svg").append("g")
     body.attr("id", "trackgroup")
@@ -93,14 +94,4 @@ function drawHeatmap(data, baseMap, param, s) {
     let locations = data.map(d => [d.lat, d.long, d[param]])
     let heat = L.heatLayer(locations, { radius: s });
     return heat
-}
-
-function drawBaseMap() {
-    // Add a tile to the map = a background. Comes from OpenStreetmap
-    let baseLayer = L.tileLayer(
-        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
-        maxZoom: 16,
-    });
-    return baseLayer;
 }
