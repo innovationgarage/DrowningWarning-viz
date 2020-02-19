@@ -69,6 +69,7 @@ function drawMapChart(data) {
 
     // Add a controler
     L.control.layers(baseLayers, overlayMaps).addTo(baseMap);
+    baseMap.addLayer(heatmap_a);
 
     let body = d3.select("#mapdiv").select("svg").append("g")
     body.attr("id", "trackgroup")
